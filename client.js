@@ -3,12 +3,12 @@
 require('isomorphic-fetch');
 const ApolloClient = require('apollo-client');
 const gql = require('graphql-tag');
+const config = require('./config');
 
-const port = 3001;
 const createNetworkInterface = ApolloClient.createNetworkInterface;
 const client = new ApolloClient.ApolloClient({
   networkInterface: createNetworkInterface({
-    uri: `http://localhost:${port}/graphql`
+    uri: `http://localhost:${config.proxy.port}/graphql`
   })
 });
 
@@ -21,5 +21,19 @@ client.query({
     }
   `
 })
-  .then(data => console.log(data))
+  .then(data => console.log(data.data))
+  .catch(error => console.error(error));
+
+client.query({
+  query: gql`
+{
+  __schema {
+    types {
+      name
+    }
+  }
+}
+  `
+})
+  .then(data => console.log(data.data.__schema)) // eslint-disable-line
   .catch(error => console.error(error));

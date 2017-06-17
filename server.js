@@ -5,10 +5,10 @@ const KoaRouter = require('koa-router'); // koa-router@next
 const koaBody = require('koa-bodyparser'); // koa-bodyparser@next
 const graphqlKoa = require('graphql-server-koa').graphqlKoa;
 const makeExecutableSchema = require('graphql-tools').makeExecutableSchema;
+const config = require('./config');
 
 const app = new Koa();
 const router = new KoaRouter();
-const port = 3001;
 
 // koaBody is needed just for POST.
 app.use(koaBody());
@@ -54,6 +54,6 @@ router.get('/graphql', graphqlKoa({schema}));
 
 app.use(router.routes());
 app.use(router.allowedMethods());
-app.listen(port);
+app.listen(config.server.port);
 
-console.log(`Server listening on port ${port}.`);
+console.log(`Server listening on port ${config.server.port}.`);
