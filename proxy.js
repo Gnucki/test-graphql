@@ -85,7 +85,7 @@ module.exports = async function start() {
           ));
           const argsDefinition = args.length === 0
             ? ''
-            : `(${args.join(', ')})`;
+            : `(${args.join(',')})`;
 
           return `${field.name}${argsDefinition}: ${field.type.name}`;
         })
@@ -97,22 +97,40 @@ module.exports = async function start() {
     }
   ));
 
-  console.log('---', typesDefinitions.filter(typeDefinition => typeDefinition));
-
   const schema = makeExecutableSchema({
     typeDefs: typesDefinitions.filter(typeDefinition => typeDefinition),
     resolvers: {
       Query: {
-        user(obj, args, context/* , info */) {
+        user: async (obj, args, context, info) => {
           console.log('... Query user ...');
           console.log('obj:', obj);
           console.log('args:', args);
           console.log('context:', context);
           // console.log('info:', info);
 
-          // TODO: forward request and response.
+          const argsDefinitions = info.fieldNodes[0].arguments.map(arg => (
+            `${arg.name.value}:"${arg.value.value}"`
+          ));
+          const selectionsDefinitions = info.fieldNodes[0].selectionSet.selections
+            .map((selection) => {
+              const name = selection.name.value;
 
-          return null;
+              return /^__/.test(name) ? null : name;
+            })
+            .filter(name => name);
+
+          const query = gql`query GetUser {
+  ${info.fieldNodes[0].name.value}(${argsDefinitions.join(',')}) {
+    ${selectionsDefinitions.join('\n')}
+  }
+}`;
+
+          const response = await client.query({query});
+
+          console.log('... Response user ...');
+          console.log('user:', response.data[info.fieldNodes[0].name.value]);
+
+          return response.data[info.fieldNodes[0].name.value];
         }
       }
     }

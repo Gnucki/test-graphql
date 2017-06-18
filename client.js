@@ -21,7 +21,7 @@ client.query({
     }
   `
 })
-  .then(data => console.log(data.data))
+  .then(data => console.log('user:', data.data))
   .catch(error => console.error(error));
 
 client.query({
@@ -35,5 +35,5 @@ client.query({
 }
   `
 })
-  .then(data => console.log(data.data.__schema)) // eslint-disable-line
+  .then(data => console.log('types:', data.data.__schema)) // eslint-disable-line
   .catch(error => console.error(error));
