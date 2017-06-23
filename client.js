@@ -15,20 +15,41 @@ const client = new ApolloClient.ApolloClient({
 client.query({
   query: gql`
     query GetUser {
-      user(id:"tom") {
+      user(id: "tom") {
         name
+        comments
+        preference(key: "autolog", plop: 3) {
+          value
+        }
+        preferences {
+          key
+          value
+        }
       }
     }
   `
 })
-  .then(data => console.log('user:', data.data))
+  .then(data => console.log('user:', data.data.user))
   .catch(error => console.error(error));
 
+// https://github.com/graphql/graphql-js/blob/master/src/type/introspection.js
 client.query({
   query: gql`
 {
   __schema {
     types {
+      name
+    }
+    queryType {
+      name
+    }
+    mutationType {
+      name
+    }
+    subscriptionType {
+      name
+    }
+    directives {
       name
     }
   }

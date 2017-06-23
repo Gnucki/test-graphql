@@ -11,3 +11,11 @@ Start a client
 ```sh
 $ npm start client
 ```
+
+## Spec
+
+const proxy = new AgraphProxy();
+proxy.addEndpoint(uri, options); // {namespace: ""}
+proxy.addType(`Message {
+  author: User
+}`);

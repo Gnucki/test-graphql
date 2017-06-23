@@ -15,12 +15,50 @@ app.use(koaBody());
 
 const users = {
   bobby: {
-    name: 'Bobby'
+    id: 1,
+    name: 'Bobby',
+    comments: [
+      'oh my god!'
+    ],
+    foo: 'bar'
   },
   tom: {
-    name: 'Tom'
+    id: 2,
+    name: 'Tom',
+    comments: [
+      'hey Bob!',
+      'this is not my war.'
+    ],
+    foo: 'bar'
   }
 };
+
+const preferences = [
+  {
+    id: 3,
+    user: 1,
+    key: 'rememberme',
+    value: true
+  },
+  {
+    id: 4,
+    user: 1,
+    key: 'rememberme',
+    value: true
+  },
+  {
+    id: 5,
+    user: 2,
+    key: 'autolog',
+    value: true
+  },
+  {
+    id: 6,
+    user: 2,
+    key: 'autolog',
+    value: true
+  }
+];
 
 const schema = makeExecutableSchema({
   typeDefs: [
@@ -30,20 +68,49 @@ const schema = makeExecutableSchema({
     `type User {
       id: ID
       name: String
+      comments: [String]
+      foo: String
+      preference(key: String!, plop: Int): Preference
+      preferences: [Preference]
+    }`,
+    `type Preference {
+      id: ID
+      user: User
+      key: String
+      value: Boolean
     }`,
     `schema {
-        query: Query
+      query: Query
     }`
   ],
   resolvers: {
     Query: {
       user(obj, args, context/* , info */) {
         console.log('... Query user ...');
-        console.log('obj:', obj);
         console.log('args:', args);
         console.log('context:', context);
         // console.log('info:', info);
         return users[args.id];
+      }
+    },
+    User: {
+      preference(user, args, context) {
+        console.log('... User preference ...');
+        console.log('user:', user);
+        console.log('args:', args);
+        console.log('context:', context);
+
+        return preferences.find(
+          preference => preference.user === user.id && preference.key === args.key
+        );
+      },
+      preferences(user, args, context) {
+        console.log('... User preferences ...');
+        console.log('user:', user);
+        console.log('args:', args);
+        console.log('context:', context);
+
+        return preferences.filter(preference => preference.user === user.id);
       }
     }
   }
