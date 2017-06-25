@@ -10,8 +10,7 @@ const ApolloClient = require('apollo-client');
 const gql = require('graphql-tag');
 const config = require('./config');
 const graphql = require('graphql');
-
-console.log(Object.keys(graphql));
+const graphqlUtils = require('graphql/utilities');
 
 const createNetworkInterface = ApolloClient.createNetworkInterface;
 const networkInterface = createNetworkInterface({
@@ -46,6 +45,14 @@ module.exports = async function start() {
     `
   });
   const types = typesResponse.data.__schema.types; // eslint-disable-line
+
+      const response = await client.query({query: gql`${graphql.introspectionQuery}`});
+console.log('_____________________________', response.data.__schema);
+console.log('...............')
+const clientSchema = graphql.buildClientSchema(response.data);
+const typeDef = graphqlUtils.printIntrospectionSchema(clientSchema);
+console.log(typeDef);
+
 
   const typesDefinitions = await Promise.all(types.map(
     async (typeItem) => {
