@@ -81,6 +81,36 @@ const schema = makeExecutableSchema({
     }`,
     `schema {
       query: Query
+    }
+    enum Episode {
+      NEWHOPE
+      EMPIRE
+      JEDI
+    }
+    interface Character {
+      id: ID!
+      name: String!
+      friends: [Character]
+      appearsIn: [Episode]!
+    }
+    type Human implements Character {
+      id: ID!
+      name: String!
+      friends: [Character]
+      appearsIn: [Episode]!
+      totalCredits: Int
+    }
+    type Droid implements Character {
+      id: ID!
+      name: String!
+      friends: [Character]
+      appearsIn: [Episode]!
+      primaryFunction: String
+    }
+    union SearchResult = Human | Droid
+    input ReviewInput {
+      stars: Int!
+      commentary: String
     }`
   ],
   resolvers: {
